@@ -1,111 +1,109 @@
-# Hello, World! Docker Action
+# TigerBeetle GitHub Action
 
 [![GitHub Super-Linter](https://github.com/actions/hello-world-docker-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/actions/hello-world-docker-action/actions/workflows/ci.yml/badge.svg)
 
-This action prints `Hello, World!` or `Hello, <who-to-greet>!` to the log. To
-learn how this action was built, see
-[Creating a Docker container action](https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action).
-
-## Create Your Own Action
-
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
-
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
-
-> [!CAUTION]
->
-> Make sure to remove or update the [`CODEOWNERS`](./CODEOWNERS) file! For
-> details on how to use this file, see
-> [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners).
+This action runs a TigerBeetle server instance in your GitHub Actions workflow. TigerBeetle is a distributed financial accounting database designed for mission-critical safety and performance.
 
 ## Usage
 
 Here's an example of how to use this action in a workflow file:
 
 ```yaml
-name: Example Workflow
+name: Run TigerBeetle
 
 on:
   workflow_dispatch:
     inputs:
-      who-to-greet:
-        description: Who to greet in the log
-        required: true
-        default: 'World'
+      cluster:
+        description: The cluster ID for TigerBeetle
+        required: false
+        default: '0'
+        type: string
+      replica:
+        description: The replica ID for TigerBeetle
+        required: false
+        default: '0'
+        type: string
+      replica-count:
+        description: The number of replicas in the cluster
+        required: false
+        default: '1'
+        type: string
+      port:
+        description: The port to run TigerBeetle on
+        required: false
+        default: '3000'
         type: string
 
 jobs:
-  say-hello:
-    name: Say Hello
+  run-tigerbeetle:
+    name: Run TigerBeetle Server
     runs-on: ubuntu-latest
 
     steps:
-      # Change @main to a specific commit SHA or version tag, e.g.:
-      # actions/hello-world-docker-action@e76147da8e5c81eaf017dede5645551d4b94427b
-      # actions/hello-world-docker-action@v1.2.3
-      - name: Print to Log
-        id: print-to-log
-        uses: actions/hello-world-docker-action@main
+      - name: Start TigerBeetle
+        id: tigerbeetle
+        uses: fatih-altuntas/tigerbeetle-github-action@main
         with:
-          who-to-greet: ${{ inputs.who-to-greet }}
+          cluster: ${{ inputs.cluster }}
+          replica: ${{ inputs.replica }}
+          replica-count: ${{ inputs.replica-count }}
+          port: ${{ inputs.port }}
 ```
-
-For example workflow runs, check out the
-[Actions tab](https://github.com/actions/hello-world-docker-action/actions)!
-:rocket:
 
 ## Inputs
 
 | Input          | Default | Description                     |
 | -------------- | ------- | ------------------------------- |
-| `who-to-greet` | `World` | The name of the person to greet |
+| `cluster`      | `0`     | The cluster ID for TigerBeetle  |
+| `replica`      | `0`     | The replica ID for TigerBeetle  |
+| `replica-count`| `1`     | Number of replicas in cluster   |
+| `port`         | `3000`  | Port to run TigerBeetle on      |
 
 ## Outputs
 
-| Output | Description             |
-| ------ | ----------------------- |
-| `time` | The time we greeted you |
+| Output  | Description                    |
+| ------- | ------------------------------ |
+| `status`| The status of TigerBeetle server |
+| `port`  | The port TigerBeetle is running on |
 
 ## Test Locally
 
-After you've cloned the repository to your local machine or codespace, you'll
-need to perform some initial setup steps before you can test your action.
+After you've cloned the repository to your local machine or codespace, you can test the action locally:
 
-> [!NOTE]
->
-> You'll need to have a reasonably modern version of
-> [Docker](https://www.docker.com/get-started/) handy (e.g. docker engine
-> version 20 or later).
-
-1. :hammer_and_wrench: Build the container
-
-   Make sure to replace `actions/hello-world-docker-action` with an appropriate
-   label for your container.
-
+1. Build the container:
    ```bash
-   docker build -t actions/hello-world-docker-action .
+   docker build -t tigerbeetle-action .
    ```
 
-1. :white_check_mark: Test the container
-
-   You can pass individual environment variables using the `--env` or `-e` flag.
-
+2. Test the container:
    ```bash
-   $ docker run --env INPUT_WHO_TO_GREET="Mona Lisa Octocat" actions/hello-world-docker-action
-   ::notice file=entrypoint.sh,line=7::Hello, Mona Lisa Octocat!
+   docker run --env INPUT_CLUSTER="0" \
+              --env INPUT_REPLICA="0" \
+              --env INPUT_REPLICA_COUNT="1" \
+              --env INPUT_PORT="3000" \
+              tigerbeetle-action
    ```
 
-   Or you can pass a file with environment variables using `--env-file`.
-
+   Or using an env file:
    ```bash
-   $ echo "INPUT_WHO_TO_GREET=\"Mona Lisa Octocat\"" > ./.env.test
+   $ echo "INPUT_CLUSTER=0
+   INPUT_REPLICA=0
+   INPUT_REPLICA_COUNT=1
+   INPUT_PORT=3000" > ./.env.test
 
-   $ docker run --env-file ./.env.test actions/hello-world-docker-action
-   ::notice file=entrypoint.sh,line=7::Hello, Mona Lisa Octocat!
+   $ docker run --env-file ./.env.test tigerbeetle-action
    ```
+
+## Features
+
+- Automatically downloads and installs the latest version of TigerBeetle
+- Supports aarch64-linux architecture
+- Configurable cluster and replica settings
+- Customizable port
+- Provides status and port information as outputs
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

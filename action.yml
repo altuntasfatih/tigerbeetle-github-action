@@ -1,21 +1,38 @@
-name: Hello, World!
-description: Greet someone and record the time
+name: TigerBeetle Server
+description: Run a TigerBeetle server instance
 author: GitHub Actions
 
 # Define your inputs here.
 inputs:
-  who-to-greet:
-    description: Who to greet
-    required: true
-    default: World
+  cluster:
+    description: The cluster ID for TigerBeetle
+    required: false
+    default: "0"
+  replica:
+    description: The replica ID for TigerBeetle
+    required: false
+    default: "0"
+  replica-count:
+    description: The number of replicas in the cluster
+    required: false
+    default: "1"
+  port:
+    description: The port to run TigerBeetle on
+    required: false
+    default: "3000"
 
 # Define your outputs here.
 outputs:
-  time:
-    description: The time we greeted you
+  status:
+    description: The status of the TigerBeetle server
+  port:
+    description: The port the TigerBeetle server is running on
 
 runs:
   using: docker
   image: Dockerfile
   env:
-    INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
+    INPUT_CLUSTER: ${{ inputs.cluster }}
+    INPUT_REPLICA: ${{ inputs.replica }}
+    INPUT_REPLICA_COUNT: ${{ inputs.replica-count }}
+    INPUT_PORT: ${{ inputs.port }}
