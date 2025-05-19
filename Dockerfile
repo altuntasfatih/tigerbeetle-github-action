@@ -1,5 +1,5 @@
 # Set the base image to use for subsequent instructions
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Add metadata labels
 LABEL maintainer="GitHub Actions"
