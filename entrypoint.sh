@@ -1,7 +1,5 @@
 #!/bin/sh -l
 
-set -euo pipefail
-
 # Create data directory with proper permissions
 mkdir -p /data
 

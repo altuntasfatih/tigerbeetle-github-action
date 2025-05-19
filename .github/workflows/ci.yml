@@ -24,7 +24,7 @@ jobs:
           - 5001:5000
 
     env:
-      TEST_TAG: localhost:5001/actions/hello-world-docer-action:latest
+      TEST_TAG: localhost:5001/tigerbeetle-action:latest
 
     steps:
       - name: Checkout
@@ -49,10 +49,16 @@ jobs:
       - name: Run the Container
         id: run
         env:
-          INPUT_WHO_TO_GREET: Mona Lisa Octocat
+          INPUT_CLUSTER: "0"
+          INPUT_REPLICA: "0"
+          INPUT_REPLICA_COUNT: "1"
+          INPUT_PORT: "3000"
         run: |
           docker run \
-            --env INPUT_WHO_TO_GREET="${{ env.INPUT_WHO_TO_GREET }}" \
+            --env INPUT_CLUSTER="${{ env.INPUT_CLUSTER }}" \
+            --env INPUT_REPLICA="${{ env.INPUT_REPLICA }}" \
+            --env INPUT_REPLICA_COUNT="${{ env.INPUT_REPLICA_COUNT }}" \
+            --env INPUT_PORT="${{ env.INPUT_PORT }}" \
             --rm ${{ env.TEST_TAG }}
 
   test-action:
@@ -68,8 +74,13 @@ jobs:
         id: test-action
         uses: ./
         with:
-          who-to-greet: Mona Lisa Octocat
+          cluster: "0"
+          replica: "0"
+          replica-count: "1"
+          port: "3000"
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        run: |
+          echo "Status: ${{ steps.test-action.outputs.status }}"
+          echo "Port: ${{ steps.test-action.outputs.port }}"
